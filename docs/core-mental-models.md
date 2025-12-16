@@ -99,7 +99,36 @@ User input
 
 ---
 
-## 5. Defensive Prompting
+## 5. Balance Clarity with Brevity
+
+**Principle:** Include all essential details and constraints, but remove unnecessary words to save tokens and reduce confusion.
+
+- **Be precise, not verbose:** "Extract company name (string)" beats "Please try to extract what you think might be the company name if there is one"
+- **Use structure over prose:** Bullet points and schemas are clearer than paragraphs
+- **Cut filler words:** Remove "please", "try to", "you should", "it would be great if"
+- **Each token has purpose:** If removing a word doesn't change behavior, remove it
+
+**Example comparison:**
+
+**Verbose (wasteful):**
+```text
+Hello! I need you to please help me by trying to extract some information from the following text. If you can, please try to find the company name and also the revenue if it's mentioned anywhere. It would be really helpful if you could provide this in a JSON format, but only if that's possible for you to do. Thanks!
+```
+
+**Concise (effective):**
+```text
+Extract from the text:
+- company_name (string)
+- revenue (number or null)
+
+Output: JSON only
+```
+
+**When to be verbose:** Safety-critical rules, complex edge cases, and disambiguation need explicit detail. Don't sacrifice clarity for brevity on critical constraints.
+
+---
+
+## 6. Defensive Prompting
 
 **Principle:** Always define failure behavior explicitly. Force "don't know" paths instead of guessing.
 
@@ -139,9 +168,21 @@ These mental models work together:
 - **Prompt as config** keeps it maintainable
 - **Examples** teach the model the patterns
 - **Decomposition** makes complex tasks tractable
+- **Brevity** reduces cost and confusion
 - **Defensive prompting** prevents production incidents
 
 Every pattern in this playbook builds on these foundations.
+
+## Quick Reference
+
+| Situation | Apply This Model |
+|-----------|------------------|
+| Starting new prompt | Output-first design |
+| Prompt too long | Balance clarity with brevity |
+| Style inconsistency | Examples > instructions |
+| Complex multi-step task | Decompose tasks |
+| Hallucinations/errors | Defensive prompting |
+| Team maintenance | Prompt as config |
 
 ---
 

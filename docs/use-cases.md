@@ -298,6 +298,209 @@ Input: [RAW_COMPANY_NAME]
 
 ---
 
+### CI/CD Integration
+
+**Goal:** Automate development workflow tasks with LLM-powered tools.
+
+**Patterns:**
+- [Structured Output](./patterns/structured-output.md) - Parse git diffs, logs
+- [Few-Shot Style](./patterns/few-shot-style.md) - Consistent commit messages, release notes
+- [Task Decomposition](./patterns/task-decomposition.md) - Multi-step code review
+
+**Implementation:**
+
+**Use Case 1: Automated Commit Messages**
+
+```text
+You are a git commit message generator.
+
+Task: Generate a conventional commit message from the git diff.
+
+Style rules:
+- Format: <type>(<scope>): <description>
+- Types: feat|fix|docs|style|refactor|test|chore
+- Description: imperative mood, lowercase, no period
+- Max 72 characters
+
+Examples:
+
+Diff:
++ def calculate_total(items):
++     return sum(item.price for item in items)
+Output:
+feat(cart): add total calculation function
+
+Diff:
+- TODO: fix this later
++ # Calculate user age from birthdate
+Output:
+docs(user): improve age calculation comment
+
+Now generate for this diff:
+[GIT_DIFF]
+```
+
+**Integration:**
+
+```bash
+# Git hook: .git/hooks/prepare-commit-msg
+#!/bin/bash
+DIFF=$(git diff --cached)
+MSG=$(llm_generate "commit_message_prompt" "$DIFF")
+echo "$MSG" > "$1"
+```
+
+---
+
+**Use Case 2: Automated Code Review**
+
+```text
+You are a senior code reviewer.
+
+Task: Review the pull request changes and provide feedback.
+
+Focus areas:
+- Security vulnerabilities
+- Performance issues
+- Code style violations
+- Missing error handling
+- Unclear variable names
+
+Output (JSON only):
+{
+  "issues": [
+    {
+      "severity": "high|medium|low",
+      "type": "security|performance|style|logic",
+      "line": number,
+      "description": "string",
+      "suggestion": "string"
+    }
+  ],
+  "overall_assessment": "approve|request_changes|comment"
+}
+
+PR diff:
+[DIFF]
+```
+
+**GitHub Action:**
+
+```yaml
+name: AI Code Review
+on: [pull_request]
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run AI Review
+        run: |
+          DIFF=$(git diff origin/main...HEAD)
+          REVIEW=$(python scripts/ai_review.py "$DIFF")
+          gh pr comment ${{ github.event.pull_request.number }} --body "$REVIEW"
+```
+
+---
+
+**Use Case 3: Test Data Generation**
+
+```text
+You are a test data generator.
+
+Task: Generate realistic test data for the given schema.
+
+Requirements:
+- Generate 10 diverse examples
+- Include edge cases (empty, null, maximum values)
+- Follow data type constraints
+- Output as JSON array
+
+Schema:
+{
+  "user_id": "string (UUID format)",
+  "email": "string (valid email)",
+  "age": "integer (18-120)",
+  "signup_date": "string (ISO 8601)"
+}
+
+Output:
+```
+
+**Usage in tests:**
+
+```python
+# test_users.py
+import pytest
+
+@pytest.fixture
+def test_users():
+    """Generate test users using LLM"""
+    schema = load_schema("user_schema.json")
+    test_data = generate_test_data(schema, count=10)
+    return test_data
+
+def test_user_validation(test_users):
+    for user in test_users:
+        assert validate_user(user)
+```
+
+---
+
+**Use Case 4: Release Notes Generator**
+
+```text
+You are a technical writer generating release notes.
+
+Task: Convert git commit history into user-friendly release notes.
+
+Style:
+- Group by category (Features, Bug Fixes, Breaking Changes)
+- Use present tense
+- Focus on user impact, not implementation
+- Remove internal/technical commits
+
+Examples:
+
+Commits:
+- feat(auth): implement OAuth2 flow
+- fix(login): resolve session timeout issue
+- chore(deps): update dependencies
+
+Output:
+## Features
+- Added OAuth2 authentication support
+
+## Bug Fixes
+- Fixed an issue where users were logged out unexpectedly
+
+Now process:
+[COMMIT_LIST]
+```
+
+**Automated release:**
+
+```python
+def generate_release_notes(from_tag: str, to_tag: str) -> str:
+    """Generate release notes from git history"""
+    
+    # Get commits
+    commits = subprocess.check_output([
+        'git', 'log', f'{from_tag}..{to_tag}', '--pretty=format:%s'
+    ]).decode()
+    
+    # Generate notes
+    notes = llm_generate("release_notes_prompt", commits)
+    
+    return notes
+
+# GitHub Release
+notes = generate_release_notes("v1.0.0", "v1.1.0")
+create_github_release("v1.1.0", notes)
+```
+
+---
+
 ### Report Summarization
 
 **Goal:** Extract key metrics from reports and generate executive summaries.

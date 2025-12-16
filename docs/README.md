@@ -46,21 +46,28 @@ Practice converting flaky prompts to production-grade:
 
 ### 4. [Debugging & Optimization](./debugging.md)
 Common failure modes and fix strategies:
-- Hallucinations
-- Format drift
-- Style inconsistency
-- Cost bloat
+- Hallucinations & format drift
+- Prompt drift & version control
+- Parameter tuning (temperature, top-p, etc.)
+- Cost optimization strategies
 
-### 5. [Real-World Use Cases](./use-cases.md)
+### 5. [Security Best Practices](./security-best-practices.md)
+Protect against attacks and data leaks:
+- Prompt injection prevention
+- Input validation & sanitization
+- PII detection and redaction
+- Multi-layer defense strategies
+
+### 6. [Real-World Use Cases](./use-cases.md)
 Applied patterns by domain:
-- SaaS (support, analytics, docs)
-- Automation (email routing, data cleaning)
-- Agents (tool-calling, reasoning)
+- **SaaS:** Support triage, analytics, docs copilots
+- **Automation:** Email routing, CI/CD integration, test data generation
+- **Agents:** Tool-calling, debuggable reasoning, guardrails
 
-### 6. [Resources](./resources.md)
+### 7. [Resources](./resources.md)
 Curated tools, libraries, and learning materials
 
-### 7. [Production Checklist](./checklist.md)
+### 8. [Production Checklist](./checklist.md)
 Quality gate checklist for every production prompt
 
 ---

@@ -8,11 +8,12 @@ A production-focused playbook for writing, testing, and maintaining LLM prompts 
 
 ### Quick Links
 
-- **[Core Mental Models](./docs/core-mental-models.md)** - Foundation principles (output-first design, defensive prompting)
+- **[Core Mental Models](./docs/core-mental-models.md)** - Foundation principles (output-first design, brevity, defensive prompting)
 - **[Prompt Patterns](./docs/patterns/)** - 7 production-ready patterns with templates and examples
 - **[Hands-On Exercises](./docs/exercises.md)** - Practice converting flaky prompts to production-grade
-- **[Debugging Guide](./docs/debugging.md)** - Fix hallucinations, format drift, and cost bloat
-- **[Real-World Use Cases](./docs/use-cases.md)** - Applied patterns for SaaS, automation, and agents
+- **[Debugging Guide](./docs/debugging.md)** - Fix hallucinations, prompt drift, and parameter tuning
+- **[Security Best Practices](./docs/security-best-practices.md)** - Prevent prompt injection and protect sensitive data
+- **[Real-World Use Cases](./docs/use-cases.md)** - Applied patterns for SaaS, CI/CD automation, and agents
 - **[Resources](./docs/resources.md)** - Tools, libraries, and learning materials
 - **[Production Checklist](./docs/checklist.md)** - Quality gate before deployment
 
@@ -56,8 +57,8 @@ Transform bad prompts into production-grade implementations:
 ### Real-World Applications
 
 - **SaaS:** Support triage, analytics enrichment, docs copilots
-- **Automation:** Email routing, data cleaning, report summarization
-- **Agents:** Tool-calling, debuggable reasoning, guardrails
+- **Automation:** Email routing, CI/CD integration, test data generation, commit messages
+- **Agents:** Tool-calling, debuggable reasoning, security guardrails
 
 ## References
 

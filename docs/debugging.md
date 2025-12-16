@@ -131,7 +131,41 @@ All three interpretations are "valid" given ambiguous prompt.
 
 ---
 
-### 5. Cost Bloat
+### 5. Prompt Drift
+
+**Symptoms:**
+- Same prompt produces different results over time
+- "It worked yesterday" but fails today
+- Inconsistent outputs across team members
+- Can't reproduce issues
+
+**Example:**
+
+```python
+# Original prompt (v1.0)
+prompt = "Classify sentiment as positive/negative/neutral"
+
+# Someone tweaks it
+prompt = "Classify sentiment (positive, negative, or neutral)"
+
+# Another person modifies
+prompt = "You are a sentiment classifier. Classify as positive, negative, or neutral."
+
+# Now outputs are inconsistent across versions
+```
+
+**Root Causes:**
+- No version control for prompts
+- Ad-hoc modifications without testing
+- Multiple people editing same prompt
+- No diff/change tracking
+- Prompt stored as magic strings in code
+
+**Impact:** Inconsistent outputs, degraded performance, impossible debugging
+
+---
+
+### 6. Cost Bloat
 
 **Symptoms:**
 - Prompt token count keeps growing
@@ -383,6 +417,108 @@ Output: {"ok": false, "error": "AMBIGUOUS_ADDRESS"}
 
 ---
 
+### For Prompt Drift
+
+#### Strategy 1: Version Control
+
+Treat prompts as code:
+
+```python
+# prompts/ticket_classifier.py
+PROMPT_VERSION = "2.1.0"
+
+TICKET_CLASSIFIER_PROMPT = """
+You are a support triage assistant.
+
+Task: Classify ticket intent and priority.
+
+Output JSON:
+{
+  "intent": "bug|feature|billing|question",
+  "priority": "low|medium|high"
+}
+
+Ticket: {ticket_text}
+"""
+
+# Git commit with version bump
+# Changelog: v2.1.0 - Added "billing" to intent types
+```
+
+#### Strategy 2: Centralized Prompt Registry
+
+```python
+# prompt_registry.py
+class PromptRegistry:
+    """Centralized prompt management"""
+    
+    prompts = {
+        "ticket_classifier_v2": {
+            "template": TICKET_CLASSIFIER_PROMPT,
+            "version": "2.1.0",
+            "created_by": "user@example.com",
+            "last_updated": "2024-01-15",
+            "test_accuracy": 0.92
+        }
+    }
+    
+    @classmethod
+    def get_prompt(cls, name: str, version: str = "latest") -> str:
+        """Retrieve specific prompt version"""
+        if version == "latest":
+            return cls.prompts[name]["template"]
+        return cls.prompts[f"{name}_v{version}"]["template"]
+```
+
+#### Strategy 3: Automated Testing
+
+Prevent regressions with tests:
+
+```python
+def test_prompt_v2_accuracy():
+    """Ensure new prompt version doesn't regress"""
+    
+    test_cases = load_test_cases("ticket_classifier_eval.json")
+    prompt = PromptRegistry.get_prompt("ticket_classifier_v2")
+    
+    accuracy = evaluate_prompt(prompt, test_cases)
+    
+    # Require 90% accuracy
+    assert accuracy >= 0.90, f"Prompt accuracy {accuracy} below threshold"
+
+def test_prompt_consistency():
+    """Same input should produce same output"""
+    
+    prompt = PromptRegistry.get_prompt("ticket_classifier_v2")
+    test_input = "Bug: Login button not working"
+    
+    results = [classify(prompt, test_input) for _ in range(5)]
+    
+    # All results should be identical (at temperature=0)
+    assert all(r == results[0] for r in results)
+```
+
+#### Strategy 4: Change Documentation
+
+```markdown
+# Prompt Changelog
+
+## v2.1.0 (2024-01-15)
+### Changed
+- Added "billing" to intent enum
+- Improved priority detection for urgent keywords
+
+### Performance
+- Test accuracy: 92% (up from 89%)
+- Cost per call: $0.002 (unchanged)
+
+### Migration
+- No breaking changes
+- Backward compatible with v2.0.0
+```
+
+---
+
 ### For Cost
 
 #### Strategy 1: Move to System Prompt
@@ -562,6 +698,114 @@ failures = [ex for ex in eval_set if model_output != ex['expected_output']]
 - [ ] Batch requests when possible
 - [ ] Set max_tokens to prevent runaway generation
 - [ ] Use prompt compression tools (e.g., LLMLingua)
+
+---
+
+## Parameter Tuning Guide
+
+Beyond the prompt itself, API parameters significantly affect output quality and cost.
+
+### Temperature
+
+Controls randomness/creativity.
+
+| Value | Best For | Example Use Cases |
+|-------|----------|-------------------|
+| 0.0 - 0.3 | Deterministic, factual tasks | Data extraction, classification, code generation |
+| 0.4 - 0.7 | Balanced creativity | Q&A, summarization, translation |
+| 0.8 - 1.0 | Creative generation | Marketing copy, brainstorming, creative writing |
+| 1.0 - 2.0 | Maximum creativity | Experimental, artistic generation |
+
+**Debug tip:** If outputs are inconsistent, try temperature=0 to eliminate randomness.
+
+### Top-P (Nucleus Sampling)
+
+Alternative to temperature. Controls diversity by probability mass.
+
+- **top_p=1.0:** Consider all tokens (default)
+- **top_p=0.9:** Consider top 90% probability mass (recommended for most tasks)
+- **top_p=0.1:** Very focused, deterministic
+
+**General rule:** Use temperature OR top_p, not both. If using top_p, set temperature=1.
+
+### Max Tokens
+
+Limits output length.
+
+```python
+# For classification/extraction (save cost)
+max_tokens=100
+
+# For summaries
+max_tokens=500
+
+# For long-form generation
+max_tokens=2000
+
+# Safety: prevent runaway generation
+max_tokens=4000  # Hard cap even for long tasks
+```
+
+### Frequency Penalty & Presence Penalty
+
+Reduce repetition:
+
+- **frequency_penalty** (0.0 to 2.0): Penalizes tokens based on frequency
+  - 0.0: No penalty (default)
+  - 0.5 to 1.0: Moderate reduction of repetition
+  - 1.0+: Strong penalty (use sparingly)
+
+- **presence_penalty** (0.0 to 2.0): Penalizes tokens that already appeared
+  - Use when you want diverse topics/vocabulary
+
+**Debug tip:** If output is repetitive, add `frequency_penalty=0.7`
+
+### Stop Sequences
+
+Force generation to stop at specific tokens:
+
+```python
+# Stop at end of JSON object
+stop=["}"]
+
+# Stop at specific markers
+stop=["</answer>", "\n\n---"]
+
+# Multiple stop sequences
+stop=["END", "STOP", "\n\n\n"]
+```
+
+### Recommended Settings by Task
+
+```python
+# Data extraction
+{
+    "temperature": 0.0,
+    "max_tokens": 200,
+    "top_p": 1.0
+}
+
+# Customer support Q&A
+{
+    "temperature": 0.3,
+    "max_tokens": 500,
+    "frequency_penalty": 0.3  # Reduce repetitive phrasing
+}
+
+# Creative content
+{
+    "temperature": 0.9,
+    "max_tokens": 2000,
+    "presence_penalty": 0.6  # Encourage topic diversity
+}
+
+# Code generation
+{
+    "temperature": 0.2,
+    "max_tokens": 1500,
+    "stop": ["```", "# End"]  # Stop at code fence
+}
+```
 
 ---
 

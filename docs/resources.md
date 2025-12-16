@@ -34,6 +34,25 @@ Tools, libraries, learning materials, and communities for production prompt engi
   - Structured outputs
   - Advanced prompting techniques
 
+#### The Prompt Engineering Playbook for Programmers
+- **URL:** [addyo.substack.com](https://addyo.substack.com/p/the-prompt-engineering-playbook-for)
+- **Author:** Addy Osmani (Google Chrome team)
+- **Best for:** Developer-focused prompt engineering
+- **Focus:** Practical patterns for code generation, automation, and development workflows
+- **Topics:** Context precision, reusable prompt templates, task decomposition
+
+#### LaunchDarkly Prompt Engineering Best Practices
+- **URL:** [launchdarkly.com/blog/prompt-engineering-best-practices](https://launchdarkly.com/blog/prompt-engineering-best-practices/)
+- **Best for:** Production deployment considerations
+- **Focus:** Safety, guardrails, and feature flag integration with LLMs
+- **Topics:** Input validation, prompt injection prevention, constraint specification
+
+#### Kinde Guide: Prompt Patterns That Scale
+- **URL:** [kinde.com/learn](https://kinde.com/learn/ai-for-software-engineering/prompting/prompt-patterns-that-scale-reusable-llm-prompts-for-dev-eams/)
+- **Best for:** Team-scale prompt engineering
+- **Focus:** Reusable patterns for development teams
+- **Topics:** Centralized prompt management, version control, scalable architectures
+
 ### Model-Specific Documentation
 
 #### OpenAI Prompt Engineering Guide
@@ -63,6 +82,16 @@ Tools, libraries, learning materials, and communities for production prompt engi
 ## Tools & Platforms
 
 ### Prompt Management & Evaluation
+
+#### OpenAI Playground
+- **URL:** [platform.openai.com/playground](https://platform.openai.com/playground)
+- **Purpose:** Interactive prompt testing and experimentation
+- **Key features:**
+  - Live testing with multiple models
+  - Temperature and parameter tuning
+  - System/user message management
+  - Export to code
+- **Best for:** Rapid prototyping and initial prompt development
 
 #### LangSmith (by LangChain)
 - **Purpose:** Prompt versioning, testing, debugging
@@ -107,6 +136,26 @@ Tools, libraries, learning materials, and communities for production prompt engi
   - Regression detection
   - Custom evaluation metrics
 - **Best for:** Large-scale prompt testing
+
+#### DeepEval
+- **URL:** [github.com/confident-ai/deepeval](https://github.com/confident-ai/deepeval)
+- **Purpose:** Open-source LLM evaluation framework
+- **Key features:**
+  - Unit testing for LLM outputs
+  - Multiple evaluation metrics (hallucination, toxicity, bias)
+  - Integration with pytest
+  - CI/CD pipeline support
+- **Best for:** Automated testing and quality assurance
+
+#### OpenAI Evals
+- **URL:** [github.com/openai/evals](https://github.com/openai/evals)
+- **Purpose:** Framework for evaluating LLM performance
+- **Key features:**
+  - Standardized evaluation templates
+  - Custom eval creation
+  - Benchmark datasets
+  - Community-contributed evals
+- **Best for:** Standardized model evaluation and benchmarking
 
 ### Guardrails & Safety
 
@@ -223,12 +272,34 @@ user = client.chat.completions.create(
   - Real-world use case examples
   - Code snippets for common patterns
   - Evaluation methodologies
+  - Best practices for embeddings, fine-tuning, and function calling
 
 #### Anthropic Prompt Library
+- **URL:** [docs.anthropic.com/claude/prompt-library](https://docs.anthropic.com/claude/prompt-library)
 - **Contains:**
   - Production prompt templates
   - Claude-specific optimizations
   - Enterprise use cases
+  - Copy-paste ready examples
+
+#### Awesome Prompt Engineering
+- **URL:** [github.com/promptslab/Awesome-Prompt-Engineering](https://github.com/promptslab/Awesome-Prompt-Engineering)
+- **Contains:**
+  - Curated list of prompt engineering guides
+  - Research papers and tutorials
+  - Tools and frameworks
+  - Community resources
+- **Best for:** Comprehensive reference of PE resources
+
+#### DAIR.AI Prompt Engineering Guide (Repo)
+- **URL:** [github.com/dair-ai/Prompt-Engineering-Guide](https://github.com/dair-ai/Prompt-Engineering-Guide)
+- **Contains:**
+  - Comprehensive guides and tutorials
+  - Academic papers collection
+  - Jupyter notebooks with examples
+  - Multilingual resources
+  - RAG and AI agent patterns
+- **Best for:** Academic and research-oriented learning
 
 ### Evaluation Frameworks
 
@@ -288,9 +359,17 @@ user = client.chat.completions.create(
 ### Blogs & Newsletters
 
 - **Hamel Husain's Blog:** Production ML and prompt engineering
+  - [hamel.dev](https://hamel.dev/) - Practical ML engineering insights
+- **Addy Osmani (Google Chrome):** Developer-focused AI content
+  - [The Prompt Engineering Playbook for Programmers](https://addyo.substack.com/p/the-prompt-engineering-playbook-for)
 - **Latitude AI Blog:** [LLM optimization techniques](https://latitude-blog.ghost.io/blog/5-ways-to-optimize-llm-prompts-for-production-environments/)
+  - [10 Best Practices for Production-Grade LLM Prompt Engineering](https://latitude-blog.ghost.io/blog/10-best-practices-for-production-grade-llm-prompt-engineering/)
+- **LaunchDarkly Blog:** Feature flags and AI integration
+  - [Prompt Engineering Best Practices](https://launchdarkly.com/blog/prompt-engineering-best-practices/)
 - **Red Hat AI Blog:** [Hallucination prevention](https://www.redhat.com/en/blog/when-llms-day-dream-hallucinations-how-prevent-them)
 - **PromptHub:** [Prompt management platforms comparison](https://www.prompthub.us/blog/three-prompt-engineering-methods-to-reduce-hallucinations)
+- **Kinde Learn:** Team-scale prompt engineering
+  - [Prompt Patterns That Scale](https://kinde.com/learn/ai-for-software-engineering/prompting/prompt-patterns-that-scale-reusable-llm-prompts-for-dev-eams/)
 
 ### Research Papers
 
@@ -312,6 +391,7 @@ user = client.chat.completions.create(
 | **Prototyping** | OpenAI Playground, Anthropic Console |
 | **Team collaboration** | Humanloop, PromptLayer |
 | **Production monitoring** | LangSmith, Langfuse |
+| **Evaluation & testing** | DeepEval, OpenAI Evals |
 | **RAG systems** | LlamaIndex, LangChain |
 | **Structured outputs** | Instructor, native APIs |
 | **Safety** | Guardrails AI, provider moderation APIs |
@@ -321,18 +401,20 @@ user = client.chat.completions.create(
 
 **Solo Developer:**
 - OpenAI/Anthropic Playground
+- DeepEval for testing
 - Simple logging to files
 - Native structured output APIs
 
 **Small Team (2-10):**
 - Langfuse or PromptLayer
+- OpenAI Evals for benchmarking
 - Shared prompt repository (Git)
 - Basic evaluation scripts
 
 **Large Team/Enterprise:**
 - LangSmith or Humanloop
 - Dedicated prompt management platform
-- Automated evaluation pipelines
+- Automated evaluation pipelines (DeepEval, custom)
 - Custom guardrails
 
 ---
