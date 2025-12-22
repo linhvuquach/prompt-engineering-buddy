@@ -60,6 +60,9 @@ Transform bad prompts into production-grade implementations:
 - **Automation:** Email routing, CI/CD integration, test data generation, commit messages
 - **Agents:** Tool-calling, debuggable reasoning, security guardrails
 
+## Prompt collection
+- [prompt chats](https://prompts.chat/prompts)
+
 ## References
 
 - See [Resources](./docs/resources.md) for comprehensive learning materials and tools
